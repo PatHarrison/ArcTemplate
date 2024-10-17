@@ -155,6 +155,9 @@ def arcpy_log_messages(result: arcpy.Result|None=None) -> list:
     return messages
 
 
+# --------------------
+# General Setup
+# --------------------
 def print_header(msg: str) -> int:
     """Printing Utility for nice boxes.
     Adapted from:
@@ -179,7 +182,8 @@ def print_header(msg: str) -> int:
 # --------------------
 # Program Workflow
 # --------------------
-def main(log_level: int,
+def main(workspace: Path,
+         log_level: int,
          arcpy_msgs_level: int|None=None
          ) -> int:
     """Main program flow and entry point.
@@ -229,7 +233,4 @@ if __name__ == "__main__":
     # --------------------
     # Call Workflow
     # --------------------
-    exit(main(log_level=log_level,
-              arcpy_msgs_level=0,
-              )
-         )
+    main(workspace=Path(args.workspace), log_level=log_level, arcpy_msgs_level=0)
