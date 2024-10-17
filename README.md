@@ -1,13 +1,12 @@
 # ArcPy Template Script
 ## Overview
 This is a template script for ArcPy that provides a structured approach to developing geospatial analysis workflows using Esri’s ArcGIS. 
-It includes essential features such as logging, error handling, and customizable parameters, making it easier for users to create and maintain geospatial scripts.
+It includes essential features such as logging, error handling, and customizable parameters.
 
 ## Features
 - Logging: Integrated logging of messages using ArcPy's message logging methods.
 - Customizable Parameters: Easily adjustable parameters for various geospatial tasks.
 - Error Handling: Robust error handling to ensure smooth execution.
-- Template Structure: Clear structure to help developers organize their scripts.
 
 ## Requirements
 - ArcGIS Pro: This script is intended to be used with ArcGIS Pro and requires an active ArcGIS license.
