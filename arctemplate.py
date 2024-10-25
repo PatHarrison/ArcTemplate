@@ -31,7 +31,7 @@ import logging
 from logging import Logger
 from pathlib import Path
 from contextlib import contextmanager
-from typing import Generator, Any, Iterable, Iterator, List, Tuple, Unknown
+from typing import Any, List, Tuple, Union
 from tqdm import tqdm
 
 import arcpy
@@ -41,8 +41,8 @@ from arcpy import Result
 # --------------------
 # Types
 # --------------------
-ArcpyMessages = List[List[Unknown]]
-
+ArcpyMessages = List[List[Any]]
+Descriptions = List[dict[str, Union[str, arcpy.SpatialReference]]]
 
 # --------------------
 # Logging Setup
@@ -134,7 +134,7 @@ def arcpy_log_messages(
     returns:
         (list[str]): list of arcpy messages
     """
-    messages: Unknown = result.getAllMessages()
+    messages: Any = result.getAllMessages()
     result_id = result.resultID
     for message in messages:
         msg_type = message[0]
@@ -194,7 +194,7 @@ def log_messages(severity=2, logger: Logger = get_script_logger()) -> object:
             with arcpy_severity_context(severity):
                 logger.info(f"{func.__name__} called with {args}")
                 try:
-                    result = func(*args, **kwargs) # Run tool
+                    result: Result = func(*args, **kwargs) # Run tool
                 except arcpy.ExecuteError:
                     logger.error(f"ArcPy encounted an error")
                     arcpy.GetAllMessages()
@@ -252,6 +252,54 @@ def print_header(msg: str, width_factor=0.33) -> int:
     return 0
 
 
+def describe_in_table(
+    descriptions: list[dict[str, Any]], fields: list[str],
+    headers: list[str]|None = None,
+) -> int:
+    """Utility for nicely printing tables to stdout.
+
+    parameters:
+        descriptions (list[dict]): list of dictionary descriptions.
+        fields (tuple[str]): List of fields to put in the table.
+        headers (tuple[str]): List of headers to put in the table. must be the
+            same length as fields. If none, fields will be table headers.
+    returns:
+        (int): return 0 if successful, 1 if not
+    """
+    headers = headers or fields
+
+    assert len(fields) == len(headers)
+
+    col_widths = [
+        max(len(h)+4, 
+            max((len(d[field].name) if isinstance(d[field], arcpy.SpatialReference) 
+                             else len(str(d[field]))) + 4 for d in descriptions)
+        )
+        for h, field in zip(headers, fields)
+    ]
+
+    # Header string
+    header_str: str = f""
+    for i, header in enumerate(headers):
+        header_str += f"{header:<{col_widths[i]}}"
+    print(header_str)
+
+    # Midrule line
+    midrule: str = "_" * sum(col_widths)
+    print(midrule)
+
+    # Table Content
+    for desc in descriptions:
+        line: str = f""
+        for i, field in enumerate(fields):
+            if isinstance(desc[field], arcpy.SpatialReference):
+                line += f"{desc[field].name:<{col_widths[i]}}"
+            else:
+                line += f"{str(desc[field]):<{col_widths[i]}}"
+        print(line)
+
+    return 0
+
 # --------------------
 # Program Workflow
 # --------------------
@@ -267,11 +315,18 @@ def main(
     returns:
         (int): Return code. 0 is successful, 1 is failure
     """
-    with arcpy.EnvManager(workspace=workspace):
-        pass
+    # with arcpy.EnvManager(workspace=workspace):
+    #     pass
     logger, arcpy_msgs = setup_logging(log_level, arcpy_msgs_level)
     print_header("Program Started")
     logger.info("Starting workflow")
+    describe_in_table(descriptions=[{"a": "sdpoign",
+                                     "b": "psodgm"},
+                                    {"a": "soidgmsoidgnm",
+                                     "b": "gisoeinm"},
+                                    ],
+                      fields = ["a", "b"]
+                      )
 
     logger.info("Success. Exiting...")
     return 0
