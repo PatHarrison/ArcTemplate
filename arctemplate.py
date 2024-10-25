@@ -18,7 +18,6 @@ Requirements:
 
 Use:
     `python <ScriptName>.py
-
     This script uses the walk method and dynamically sets the arcpy 
     workspace based of the scripts location in the file directory. Due
     to this, unless changed, script must be at the root level of the 
@@ -43,6 +42,7 @@ from arcpy import Result
 # --------------------
 ArcpyMessages = List[List[Any]]
 Descriptions = List[dict[str, Union[str, arcpy.SpatialReference]]]
+
 
 # --------------------
 # Logging Setup
@@ -327,7 +327,6 @@ def main(
                                     ],
                       fields = ["a", "b"]
                       )
-
     logger.info("Success. Exiting...")
     return 0
 
